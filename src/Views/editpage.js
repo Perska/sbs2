@@ -101,6 +101,17 @@ class EditView extends BaseView {
 			let w = this.$wrap.checked
 			this.$textarea.style.whiteSpace = w ? 'pre-wrap' : 'pre'
 		}
+		
+		this.$emote.onclick = e=>{ this.emote_select.toggle_visibility() }
+		
+		this.$root.addEventListener('insert_emote', e=>{
+			e.stopPropagation()
+			if (this.$edit_markup.value == "12y2")
+				this.Insert_Text(EmoteSelect.to_tag(e.detail.emote, e.detail.filter, e.detail.role))
+		})
+		
+		this.emote_select = new EmoteSelect()
+		this.$emote_select.append(this.emote_select.$root)
 	}
 	set_modified(state) {
 		View.protect(this, state)
@@ -298,8 +309,10 @@ EditView.template = HTML`
 		<label>| Section: <select style='width:5rem;' $=section></select></label>
 		<label>horizontal:<input $=horizontal type=checkbox></label>
 		<label>wrap:<input $=wrap type=checkbox checked></label>
+		<button $=emote>Emotes</button>
 	</resize-handle>
 	<textarea $=textarea class='FILL editor-textarea' style='margin:3px;'></textarea>
+	<div $=emote_select class='inputPane'></div>
 </view-root>
 `
 

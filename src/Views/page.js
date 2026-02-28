@@ -119,6 +119,26 @@ class PageView extends BaseView {
 		
 		this.message_info = new MessageInfo()
 		this.$message_info.append(this.message_info.$root)
+		
+		this.$emote.onclick = e=>{ this.emote_select.toggle_visibility() }
+		
+		this.$root.addEventListener('insert_emote', e=>{
+			e.stopPropagation()
+			if ((this.editing ? this.$markup.value : Settings.values.chat_markup) != "12y2")
+				return
+			if (this.$emote_enable.checked) {
+				this.Insert_Text(`:${e.detail.emotestring}`)
+				if (e.detail.filter || e.detail.role) this.Insert_Text(`#${e.detail.filter || ""}`)
+				if (e.detail.role) this.Insert_Text(`#${e.detail.role}`)
+				this.Insert_Text(":")
+			}
+			else {
+				this.Insert_Text(EmoteSelect.to_tag(e.detail.emote, e.detail.filter, e.detail.role))
+			}
+		})
+		
+		this.emote_select = new EmoteSelect()
+		this.$emote_select.append(this.emote_select.$root)
 	}
 	Render({message, content:[page], Mpinned:pinned, user, watch, Pcontent:[parent]}) {
 		this.page_id = page.id
@@ -198,6 +218,9 @@ class PageView extends BaseView {
 		this.$textarea.disabled = !can_talk
 		if (can_talk)
 			this.$textarea.focus()
+		
+		if (page.values.emotes)
+			Emotes.recordIndex(page.values.emotes, `page/${page.id}`)
 	}
 	update_pinned(pinned, user) {
 		Entity.link_comments({message:pinned, user})
@@ -388,6 +411,9 @@ class PageView extends BaseView {
 					}
 				}
 			} else {
+				if (this.$emote_enable.checked && data.values.m == "12y2") {
+					data.text = EmoteSelect.parse_syntax(data.text)
+				}
 				Req.send_message(data).do = (resp, err)=>{
 					if (err)
 						alert("Posting failed")
@@ -527,6 +553,7 @@ PageView.template = HTML`
 	</auto-scroller>
 	<div>
 	<div $=message_info class='inputPane'></div>
+	<div $=emote_select class='inputPane'></div>
 	<div class='ROW inputPane replyPane'>
 		<button $=cancel_reply>×</button>
 		<button $=reply_info>⚙️</button>
@@ -547,6 +574,12 @@ PageView.template = HTML`
 		<textarea-container class='FILL' $=textarea_container>
 			<textarea class='chatTextarea' $=textarea accesskey="z"></textarea>
 		</textarea-container>
+		<div class='COL'>
+			<label>
+				<input type="checkbox" checked class='FILL' $=emote_enable>:emote:
+			</label>
+			<button class='FILL' $=emote>Emotes</button>
+		</div>
 		<div class='COL'>
 			(temp)
 			<button class='FILL' $=send>Send</button>

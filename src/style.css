@@ -313,6 +313,36 @@ forgot what this was for ??
 	max-height: 60vh;
 }
 
+.emoteRow button {
+	box-sizing: content-box;
+	padding: 0.25rem;
+}
+
+.emoteRow span {
+	display: none;
+	font-size: 80%;
+}
+.showLabel .emoteRow span {
+	display: inline;
+}
+
+.emoteRow .M-emote {
+	display: block;
+	margin: 0 auto;
+	outline: 1px dashed;
+	outline-offset: calc((var(--button-size) - var(--size))/ -2 *var(--emote-size, 1.125em));
+	width: calc(var(--button-size)*var(--emote-size, 1.125em));
+	height: calc(var(--button-size)*var(--emote-size, 1.125em));
+	padding: calc((var(--button-size) - var(--size))/2*var(--emote-size, 1.125em));
+	box-sizing: border-box;
+}
+
+.showLabel .emoteRow .M-emote {
+	outline-offset: calc((8 - var(--size))/ -2 *var(--emote-size, 1.125em));
+	width: calc(8*var(--emote-size, 1.125em));
+	height: calc(8*var(--emote-size, 1.125em));
+	padding: calc((8 - var(--size))/2*var(--emote-size, 1.125em));
+}
 
 /* Links */
 a {
